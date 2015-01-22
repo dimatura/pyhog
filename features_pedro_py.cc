@@ -64,7 +64,7 @@ static PyObject *process(PyObject *self, PyObject *args) {
   dims[0] = PyArray_DIM(mximage, 0);
   dims[1] = PyArray_DIM(mximage, 1);
   dims[2] = PyArray_DIM(mximage, 2);
-  printf("%d %d %d\n",(int)dims[0],(int)dims[1],(int)dims[2]);
+  //printf("%d %d %d\n",(int)dims[0],(int)dims[1],(int)dims[2]);
 
   // memory for caching orientation histograms & their norms
   int blocks[2];
