@@ -64,6 +64,7 @@ static PyObject *process(PyObject *self, PyObject *args) {
   dims[0] = PyArray_DIM(mximage, 0);
   dims[1] = PyArray_DIM(mximage, 1);
   dims[2] = PyArray_DIM(mximage, 2);
+  printf("%d %d %d\n",(int)dims[0],(int)dims[1],(int)dims[2]);
 
   // memory for caching orientation histograms & their norms
   int blocks[2];
@@ -81,7 +82,10 @@ static PyObject *process(PyObject *self, PyObject *args) {
   out[2] = 27+4;
 
   //mxfeat = mxCreateNumericArray(3, out, mxDOUBLE_CLASS, mxREAL);
-  mxfeat = (PyArrayObject *)PyArray_SimpleNew(3, out, NPY_FLOAT64);
+  mxfeat = (PyArrayObject*) PyArray_NewFromDescr(
+  &PyArray_Type, PyArray_DescrFromType(PyArray_FLOAT64),
+  3, out, NULL, NULL, NPY_F_CONTIGUOUS, NULL);
+  //(PyArrayObject *)PyArray_SimpleNew(3, out, NPY_FLOAT64);
 
   double *feat = (double *)PyArray_DATA(mxfeat);
 
@@ -242,13 +246,13 @@ static PyObject *process(PyObject *self, PyObject *args) {
   }
 
   // hack
-  PyArray_FLAGS(mxfeat) |= NPY_F_CONTIGUOUS;
-  PyArray_FLAGS(mxfeat) &= ~NPY_C_CONTIGUOUS;
+  //PyArray_FLAGS(mxfeat) |= NPY_F_CONTIGUOUS;
+  //PyArray_FLAGS(mxfeat) &= ~NPY_C_CONTIGUOUS;
 
   free(hist);
   free(norm);
 
-  return Py_BuildValue("N", mxfeat);
+  return PyArray_Return(mxfeat);//Py_BuildValue("N", mxfeat);
 }
 
 static PyMethodDef features_pedro_py_methods[] = {
