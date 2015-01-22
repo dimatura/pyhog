@@ -1,4 +1,5 @@
 #include <Python.h>
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include <numpy/arrayobject.h>
 
 #include <math.h>
@@ -40,11 +41,11 @@ static inline int max(int x, int y) { return (x <= y ? y : x); }
 // returns HOG features
 static PyObject *process(PyObject *self, PyObject *args) {
   // in
-  NPY_AO *mximage;
+  PyArrayObject *mximage;
   int sbin;
 
   // out
-  NPY_AO *mxfeat;
+  PyArrayObject *mxfeat;
 
   if (!PyArg_ParseTuple(args, "O!i",
                         &PyArray_Type, &mximage,
@@ -83,8 +84,8 @@ static PyObject *process(PyObject *self, PyObject *args) {
 
   //mxfeat = mxCreateNumericArray(3, out, mxDOUBLE_CLASS, mxREAL);
   mxfeat = (PyArrayObject*) PyArray_NewFromDescr(
-  &PyArray_Type, PyArray_DescrFromType(PyArray_FLOAT64),
-  3, out, NULL, NULL, NPY_F_CONTIGUOUS, NULL);
+      &PyArray_Type, PyArray_DescrFromType(NPY_FLOAT64),
+      3, out, NULL, NULL, NPY_ARRAY_F_CONTIGUOUS, NULL);
   //(PyArrayObject *)PyArray_SimpleNew(3, out, NPY_FLOAT64);
 
   double *feat = (double *)PyArray_DATA(mxfeat);

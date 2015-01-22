@@ -3,11 +3,11 @@
 
 /*
 This is from the book 'Python Scripting for Computational Science'
-by Hans Petter Langtangen, with some modifications. TODO: figure out license.
+by Hans Petter Langtangen, with some modifications.
 */
 
-/* This file defines some macros for programming with
-   NumPy arrays in C extension modules. */
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+#include <numpy/arrayobject.h>
 
 /* define some macros for array dimension/type check
    and subscripting */
@@ -28,7 +28,7 @@ by Hans Petter Langtangen, with some modifications. TODO: figure out license.
   } \
   if (PyArray_DIM(a, dim) != expected_length) { \
     PyErr_Format(PyExc_ValueError, \
-    "%s array has wrong %d-dimension=%d (expected %d)", \
+    "%s array has wrong %d-dimension=%ld (expected %d)", \
 		 QUOTE(a), dim, PyArray_DIM(a, dim), expected_length); \
     return NULL; \
   }
@@ -82,5 +82,8 @@ by Hans Petter Langtangen, with some modifications. TODO: figure out license.
 
 #define U8IND2(a, i, j) \
  *((npy_uint8 *) PyArray_GETPTR2(a, i, j))
+
+#define U8IND3(a, i, j, k) \
+ *((npy_uint8 *) PyArray_GETPTR3(a, i, j, k))
 
 #endif
