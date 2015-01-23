@@ -15,6 +15,7 @@ def features_pedro(img, sbin):
 
 def hog_picture(w, bs=20):
     """ Visualize positive HOG weights.
+    ported to numpy from https://github.com/CSAILVision/ihog/blob/master/showHOG.m
     """
     if not imrotate_available:
         raise RuntimeError('This function requires scipy')
