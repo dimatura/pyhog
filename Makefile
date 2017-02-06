@@ -1,6 +1,6 @@
-NUMPY=`python -c 'import numpy; print numpy.get_include()'`
-PYROOT=`python -c 'import sys; print sys.prefix'`
-VER=`python -c "import sys; print('%s.%s'%(sys.version_info[0],sys.version_info[1]))"`
+NUMPY=`python -c 'import numpy; print(numpy.get_include())'`
+PYROOT=`python -c 'import sys; print(sys.prefix)'`
+PYTHON_LIB=`python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())"`
 CC=g++
 LIBS= 
 #FLAGS= -Wall -DNUMPYCHECK -fPIC
@@ -15,7 +15,7 @@ features_pedro_py.so: features_pedro_py.o
 	g++ $^ -shared -o $@ $(LIBS)
 
 features_pedro_py.o: features_pedro_py.cc numpymacros.h
-	g++ -c $< $(FLAGS) -I$(NUMPY) -I$(PYROOT)/include/python$(VER) -I../src/ -o $@ 
+	g++ -c $< $(FLAGS) -I$(NUMPY) -I$(PYTHON_LIB) -I../src/ -o $@
 
 .PHONY: clean
 clean:
