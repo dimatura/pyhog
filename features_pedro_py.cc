@@ -7,6 +7,18 @@
 
 #include "numpymacros.h"
 
+
+struct module_state {
+    PyObject *error;
+};
+
+#if PY_MAJOR_VERSION >= 3
+#define GETSTATE(m) ((struct module_state*)PyModule_GetState(m))
+#else
+#define GETSTATE(m) (&_state)
+static struct module_state _state;
+#endif
+
 // small value, used to avoid division by zero
 #define eps 0.0001
 
@@ -256,6 +268,7 @@ static PyObject *process(PyObject *self, PyObject *args) {
   return PyArray_Return(mxfeat);//Py_BuildValue("N", mxfeat);
 }
 
+
 static PyMethodDef features_pedro_py_methods[] = {
   {"process",
     process,
@@ -264,8 +277,53 @@ static PyMethodDef features_pedro_py_methods[] = {
   {NULL, NULL, 0, NULL} /* sentinel*/
 };
 
-PyMODINIT_FUNC initfeatures_pedro_py() {
+
+#if PY_MAJOR_VERSION >= 3
+
+static int myextension_traverse(PyObject *m, visitproc visit, void *arg) {
+    Py_VISIT(GETSTATE(m)->error);
+    return 0;
+}
+
+static int myextension_clear(PyObject *m) {
+    Py_CLEAR(GETSTATE(m)->error);
+    return 0;
+}
+
+
+static struct PyModuleDef moduledef = {
+        PyModuleDef_HEAD_INIT,
+        "features_pedro_py",
+        NULL,
+        sizeof(struct module_state),
+        features_pedro_py_methods,
+        NULL,
+        myextension_traverse,
+        myextension_clear,
+        NULL
+};
+
+#define INITERROR return NULL
+
+PyMODINIT_FUNC
+PyInit_features_pedro_py(void)
+
+#else
+#define INITERROR return
+
+void
+initfeatures_pedro_py(void)
+#endif
+{
+#if PY_MAJOR_VERSION >= 3
+    PyObject *module = PyModule_Create(&moduledef);
+#else
   Py_InitModule("features_pedro_py", features_pedro_py_methods);
+#endif
   import_array();
+
+#if PY_MAJOR_VERSION >= 3
+    return module;
+#endif
 }
 
